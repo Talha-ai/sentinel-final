@@ -70,7 +70,7 @@ const SETTINGS: ScanningSettings = {
   FRAME_PROCESSING_INTERVAL: 50,
   BLUR_THRESHOLD: 999,
   MIN_BLUR_THRESHOLD: 7,
-  TARGET_QR_SIZE: 300,
+  TARGET_QR_SIZE: 700,
   INITIAL_ZOOM_LEVEL: 3,
   MAX_ZOOM: 8,
   BLUR_HISTORY_SIZE: 5,
@@ -267,8 +267,8 @@ const QRScanner = () => {
       const constraints = {
         video: {
           facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 1400 },
+          height: { ideal: 1400 },
           frameRate: { ideal: 30, max: 60 },
           // Add orientation constraint
           deviceOrientation: 'landscape',
@@ -895,7 +895,7 @@ const QRScanner = () => {
   };
 
   const createFilename = (_qrData: any) => {
-      const browser = getBrowserInfo();
+    const browser = getBrowserInfo();
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     return `${browser}-${timestamp}.png`;
   };
