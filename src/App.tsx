@@ -73,7 +73,7 @@ const SETTINGS: ScanningSettings = {
   TARGET_QR_SIZE: 700,
   INITIAL_ZOOM_LEVEL: 3,
   MAX_ZOOM: 8,
-  BLUR_HISTORY_SIZE: 5,
+  BLUR_HISTORY_SIZE: 10,
 };
 
 const zoomLevels = Array.from({ length: SETTINGS.MAX_ZOOM }, (_, i) => i + 1);
