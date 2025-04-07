@@ -71,7 +71,7 @@ const SETTINGS: ScanningSettings = {
   BLUR_THRESHOLD: 999,
   MIN_BLUR_THRESHOLD: 7,
   TARGET_QR_SIZE: 700,
-  INITIAL_ZOOM_LEVEL: 3,
+  INITIAL_ZOOM_LEVEL: 4,
   MAX_ZOOM: 8,
   BLUR_HISTORY_SIZE: 10,
 };
@@ -2205,7 +2205,6 @@ const QRScanner = () => {
                 keep it in focus
               </p>
             </div>
-
             {/* Camera View */}
             <div className="relative w-fit mx-auto z-50 rounded-2xl overflow-hidden bg-black shadow-lg">
               <video
@@ -2260,20 +2259,20 @@ const QRScanner = () => {
                 </div>
               )}
             </div>
-            <div className="w-full">
-              <ZoomSlider
-                savedZoomLevel={savedZoomLevel}
-                onZoomChange={handleZoomChange}
-              />
-            </div>
-
+            {showHiddenFeatures && (
+              <div className="w-full">
+                <ZoomSlider
+                  savedZoomLevel={savedZoomLevel}
+                  onZoomChange={handleZoomChange}
+                />
+              </div>
+            )}
             {/* Error Display - Always visible */}
             {error && (
               <div className="bg-red-50 mt-5 border border-red-200 rounded-2xl p-4 animate-fadeIn">
                 <p className="text-red-600 text-sm">{error}</p>
               </div>
             )}
-
             {postScanStatus.isProcessing ? (
               <div className="bg-white mt-5 border border-gray-300 rounded-2xl p-4 flex items-center gap-4">
                 <div className="w-12 h-12 flex items-center justify-center">
@@ -2326,7 +2325,6 @@ const QRScanner = () => {
                 )}
               </div>
             ) : null}
-
             {/* Scan Again Button - Always visible */}
             {showScanAgain && !postScanStatus.isProcessing && (
               <>
@@ -2346,7 +2344,6 @@ const QRScanner = () => {
                 )}
               </>
             )}
-
             {/* Hidden features - only shown when the secret button is clicked */}
             {showHiddenFeatures && (
               <>
@@ -2729,7 +2726,6 @@ const QRScanner = () => {
                 )}
               </>
             )}
-
             {/* Canvas (Hidden) */}
             <canvas ref={canvasRef} className="hidden" />
           </div>
