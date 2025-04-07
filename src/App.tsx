@@ -609,7 +609,7 @@ const QRScanner = () => {
         if (!sizeStatus.valid && overlayContextRef.current) {
           drawGuideMessage(
             overlayContextRef.current,
-            'Zoom to fit the QR in guide',
+            'Move closer',
             video.videoWidth,
             video.videoHeight,
             '#F7DC3E'
