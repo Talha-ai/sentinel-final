@@ -8,6 +8,15 @@ const isMobile = () => {
     );
 };
 
+const isBrave = () => {
+    if (typeof navigator === "undefined") return false;
+    if ((navigator as any).brave) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 const isStrictChrome = () => {
     if (typeof navigator === "undefined") return false;
     const ua = navigator.userAgent;
@@ -16,7 +25,10 @@ const isStrictChrome = () => {
         !ua.includes("Edg") &&
         !ua.includes("OPX") &&
         !ua.includes("OPR") &&
-        !ua.includes("SamsungBrowser")
+        !ua.includes("Brave") &&
+        !ua.includes("CriOS") &&
+        !ua.includes("SamsungBrowser") &&
+        !isBrave()
     );
 };
 
