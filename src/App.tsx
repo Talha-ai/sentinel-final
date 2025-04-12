@@ -13,6 +13,7 @@ import ZoomSlider from "./components/ZoomSlider";
 
 import { getUserLocation, Coordinates } from "./utils/location";
 import PermissionStatus from "./components/PermissionStatus";
+//import UAInspector from "./components/UAInspector";
 
 declare global {
     interface Window {
