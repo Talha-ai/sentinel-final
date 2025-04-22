@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
 interface AlertPropsType {
@@ -6,7 +7,7 @@ interface AlertPropsType {
     ua?: string;
 }
 
-export default function DeviceAndBrowserAlert({ mobile, chrome, ua }: AlertPropsType) {
+export default function DeviceAndBrowserAlert({ mobile, chrome }: AlertPropsType) {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
 
