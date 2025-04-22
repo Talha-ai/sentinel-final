@@ -16,19 +16,19 @@ const isBrave = () => {
         return false;
     }
 };
-
+let userA: string;
 const isStrictChrome = () => {
     if (typeof navigator === "undefined") return false;
     const ua = navigator.userAgent;
+    userA = ua;
     return (
-        ua.includes("Chrome") &&
-        !ua.includes("Edg") &&
-        !ua.includes("OPX") &&
-        !ua.includes("OPR") &&
-        !ua.includes("Brave") &&
-        !ua.includes("CriOS") &&
-        !ua.includes("SamsungBrowser") &&
-        !isBrave()
+        (ua.includes("Chrome") &&
+            !ua.includes("Edg") &&
+            !ua.includes("OPX") &&
+            !ua.includes("OPR") &&
+            !ua.includes("SamsungBrowser") &&
+            !isBrave()) ||
+        (ua.includes("CriOS") && ua.includes("Mac OS X"))
     );
 };
 
@@ -45,7 +45,11 @@ export default function DeviceAndBrowserGate({ children }: { children: React.Rea
         setAllowed(isMob && isChr);
     }, []);
 
-    if (allowed === null) return null; // wait until client check
+    if (allowed === null) return null;
 
-    return allowed ? children : <DeviceAndBrowserAlert mobile={mobile} chrome={chrome} />;
+    return allowed ? (
+        children
+    ) : (
+        <DeviceAndBrowserAlert mobile={mobile} chrome={chrome} ua={userA} />
+    );
 }

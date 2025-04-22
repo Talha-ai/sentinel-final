@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 interface AlertPropsType {
     mobile: boolean;
     chrome: boolean;
+    ua?: string;
 }
 
-export default function DeviceAndBrowserAlert({ mobile, chrome }: AlertPropsType) {
+export default function DeviceAndBrowserAlert({ mobile, chrome, ua }: AlertPropsType) {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
 
@@ -31,8 +32,9 @@ export default function DeviceAndBrowserAlert({ mobile, chrome }: AlertPropsType
     if (!showAlert) return null;
 
     return (
-        <div className="fixed inset-0 bg-white text-black flex items-center justify-center text-center px-6 py-4 z-[9999]">
+        <div className="fixed inset-0 bg-white text-black flex flex-col gap-2 items-center justify-center text-center px-6 py-4 z-[9999]">
             <div className="max-w-md text-2xl font-semibold">{alertMessage}</div>
+            {/* <div>{ua}</div> */}
         </div>
     );
 }
