@@ -16,10 +16,11 @@ const isBrave = () => {
         return false;
     }
 };
-
+let userA: string;
 const isStrictChrome = () => {
     if (typeof navigator === "undefined") return false;
     const ua = navigator.userAgent;
+    userA = ua;
     return (
         (ua.includes("Chrome") &&
             !ua.includes("Edg") &&
@@ -46,5 +47,9 @@ export default function DeviceAndBrowserGate({ children }: { children: React.Rea
 
     if (allowed === null) return null;
 
-    return allowed ? children : <DeviceAndBrowserAlert mobile={mobile} chrome={chrome} />;
+    return allowed ? (
+        children
+    ) : (
+        <DeviceAndBrowserAlert mobile={mobile} chrome={chrome} ua={userA} />
+    );
 }
