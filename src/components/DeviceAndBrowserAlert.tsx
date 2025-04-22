@@ -34,7 +34,7 @@ export default function DeviceAndBrowserAlert({ mobile, chrome, ua }: AlertProps
     return (
         <div className="fixed inset-0 bg-white text-black flex flex-col gap-2 items-center justify-center text-center px-6 py-4 z-[9999]">
             <div className="max-w-md text-2xl font-semibold">{alertMessage}</div>
-            <div>{ua}</div>
+            {/* <div>{ua}</div> */}
         </div>
     );
 }
