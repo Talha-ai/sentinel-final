@@ -826,7 +826,7 @@ const QRScanner = () => {
                 isProcessing: true,
             });
 
-            await sendToAPI(file, result.data);
+            await sendToAPI(file, result.data, locationRef.current);
 
             // Cleanup
             if (grayscaleCanvas !== correctedCanvas) {
@@ -917,7 +917,11 @@ const QRScanner = () => {
         return match ? match[1] : null;
     }
 
-    const sendToAPI = async (imageFile: string | Blob, qrData: string) => {
+    const sendToAPI = async (
+        imageFile: string | Blob,
+        qrData: string,
+        location: Coordinates | null
+    ) => {
         try {
             if (!isValidAlemeno(qrData)) {
                 throw new Error("Not a valid Sentinel QR");
@@ -1880,7 +1884,7 @@ const QRScanner = () => {
             });
 
             const processedFile = await canvasToFile(enhancedCanvas, result.data);
-            await sendToAPI(processedFile, result.data);
+            await sendToAPI(processedFile, result.data, locationRef.current);
 
             correctedSrc.delete();
             correctedGray.delete();
@@ -2012,7 +2016,7 @@ const QRScanner = () => {
 
             setQrData(encodedString);
 
-            await sendToAPI(imageFile, encodedString);
+            await sendToAPI(imageFile, encodedString, locationRef.current);
 
             setEnhancedImage(originalImage);
 

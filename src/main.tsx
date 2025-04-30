@@ -15,5 +15,11 @@ createRoot(document.getElementById("root")!).render(
                 </Routes>
             </BrowserRouter>
         </DeviceAndBrowserGate>
+        {/* <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<App />} />
+                <Route path="/:id" element={<App />} />
+            </Routes>
+        </BrowserRouter> */}
     </StrictMode>
 );
