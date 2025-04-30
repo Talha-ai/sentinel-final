@@ -943,6 +943,8 @@ const QRScanner = () => {
                 formData.append("location", JSON.stringify(location));
             }
 
+            formData.append("blur_values_history", JSON.stringify(blurValuesHistory.current));
+
             const response = await fetch("https://scan.alemeno.com/noiseqr/noise/", {
                 method: "POST",
                 body: formData,
