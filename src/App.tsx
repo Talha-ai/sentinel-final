@@ -641,7 +641,7 @@ const QRScanner = () => {
                     if (!blurStatus.passed && sizeStatus.valid && overlayContextRef.current) {
                         drawGuideMessage(
                             overlayContextRef.current,
-                            "Focus the image by slowly moving camera back and forth",
+                            "Focus by slowly moving camera back & forth",
                             video.videoWidth,
                             video.videoHeight,
                             "#1CE882"
@@ -2140,7 +2140,7 @@ const QRScanner = () => {
                                 <img
                                     src="/Guide.png"
                                     alt="QR Scanning Guide"
-                                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-10 p-[3.5rem]"
+                                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-10 p-[3.2rem]"
                                     style={{
                                         objectFit: "contain",
                                         opacity: 0.8,
