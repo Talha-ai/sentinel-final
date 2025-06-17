@@ -71,13 +71,13 @@ interface ScanningSettings {
 }
 
 const SETTINGS: ScanningSettings = {
-    FRAME_PROCESSING_INTERVAL: 50,
+    FRAME_PROCESSING_INTERVAL: 20,
     BLUR_THRESHOLD: 999,
-    MIN_BLUR_THRESHOLD: 7,
-    TARGET_QR_SIZE: 700,
+    MIN_BLUR_THRESHOLD: 14,
+    TARGET_QR_SIZE: 900,
     INITIAL_ZOOM_LEVEL: 4,
     MAX_ZOOM: 8,
-    BLUR_HISTORY_SIZE: 10,
+    BLUR_HISTORY_SIZE: 25,
 };
 
 const zoomLevels = Array.from({ length: SETTINGS.MAX_ZOOM }, (_, i) => i + 1);
@@ -616,7 +616,7 @@ const QRScanner = () => {
                         const avgBlur = calculateAdaptiveBlur(blurValuesHistory.current);
 
                         if (avgBlur < SETTINGS.MIN_BLUR_THRESHOLD) {
-                            setError("Move to better lighting and try again");
+                            setError("Image too blurry, move to better lighting");
                             stopCamera();
                             return;
                         }
@@ -641,7 +641,7 @@ const QRScanner = () => {
                     if (!blurStatus.passed && sizeStatus.valid && overlayContextRef.current) {
                         drawGuideMessage(
                             overlayContextRef.current,
-                            "Keep in focus",
+                            "Focus the image by slowly moving camera back and forth",
                             video.videoWidth,
                             video.videoHeight,
                             "#1CE882"
@@ -2140,7 +2140,7 @@ const QRScanner = () => {
                                 <img
                                     src="/Guide.png"
                                     alt="QR Scanning Guide"
-                                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-10 p-[5rem]"
+                                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-10 p-[3.5rem]"
                                     style={{
                                         objectFit: "contain",
                                         opacity: 0.8,
