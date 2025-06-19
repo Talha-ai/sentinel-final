@@ -179,6 +179,8 @@ const QRScanner = () => {
 
     //qr-scanner engine
     useEffect(() => {
+        localStorage.clear();
+        sessionStorage.clear();
         engineRef.current = QrScanner.createQrEngine(QrScanner.WORKER_PATH);
         return () => {
             engineRef.current?.then((worker) => worker.terminate());
