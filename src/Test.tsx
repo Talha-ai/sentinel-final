@@ -316,6 +316,13 @@ const QRScanner = () => {
                 )
             );
 
+            // setBackCameraDevices(
+            //     mediaDevices.map((device, index) => ({
+            //         ...device,
+            //         label: `Camera ${index + 1}`,
+            //     }))
+            // );
+
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
 
@@ -2214,20 +2221,23 @@ const QRScanner = () => {
                             </div>
                         )}
                         {backCameraDevices.length > 1 && (
-                            <select
-                                id="cameraDropdown"
-                                onChange={handleDeviceChange}
-                                value={selectedDeviceId || ""}
-                            >
-                                <option value="" disabled>
-                                    Select a camera
-                                </option>
-                                {backCameraDevices.map((device) => (
-                                    <option key={device.deviceId} value={device.deviceId}>
-                                        {device.label || `Camera ${device.deviceId}`}
+                            <div className="flex justify-center mt-4 w-full px-10">
+                                <select
+                                    id="cameraDropdown"
+                                    onChange={handleDeviceChange}
+                                    value={selectedDeviceId || ""}
+                                    className="w-full"
+                                >
+                                    <option value="" disabled>
+                                        Select a camera
                                     </option>
-                                ))}
-                            </select>
+                                    {backCameraDevices.map((device) => (
+                                        <option key={device.deviceId} value={device.deviceId}>
+                                            {device.label || `Camera ${device.deviceId}`}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         )}
                         {/* Error Display - Always visible */}
                         {error && (
