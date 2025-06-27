@@ -2109,7 +2109,6 @@ const QRScanner = () => {
     };
 
     const handleDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        stopCamera();
         setSelectedDeviceId(e.target.value);
     };
 
