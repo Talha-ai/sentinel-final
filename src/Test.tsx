@@ -310,16 +310,10 @@ const QRScanner = () => {
             const mediaDevices = await navigator.mediaDevices.enumerateDevices();
 
             setBackCameraDevices(
-                mediaDevices
-                    .filter(
-                        (device) =>
-                            device.kind === "videoinput" &&
-                            device.label.toLowerCase().includes("back")
-                    )
-                    .map((device, index) => ({
-                        ...device,
-                        label: `Camera ${index + 1}`,
-                    }))
+                mediaDevices.filter(
+                    (device) =>
+                        device.kind === "videoinput" && device.label.toLowerCase().includes("back")
+                )
             );
 
             // setBackCameraDevices(
