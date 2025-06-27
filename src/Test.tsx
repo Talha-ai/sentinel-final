@@ -147,9 +147,7 @@ const QRScanner = () => {
     const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([]);
     const [showScanAgain, setShowScanAgain] = useState(false);
     const [backCameraDevices, setBackCameraDevices] = useState<MediaDeviceInfo[]>([]);
-    const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(
-        localStorage.getItem("deviceId")
-    );
+    const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
 
     //----setting up----
 
@@ -309,19 +307,14 @@ const QRScanner = () => {
             const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
             const mediaDevices = await navigator.mediaDevices.enumerateDevices();
 
-            setBackCameraDevices(
-                mediaDevices.filter(
-                    (device) =>
-                        device.kind === "videoinput" && device.label.toLowerCase().includes("back")
-                )
-            );
-
             // setBackCameraDevices(
-            //     mediaDevices.map((device, index) => ({
-            //         ...device,
-            //         label: `Camera ${index + 1}`,
-            //     }))
+            //     mediaDevices.filter(
+            //         (device) =>
+            //             device.kind === "videoinput" && device.label.toLowerCase().includes("back")
+            //     )
             // );
+
+            setBackCameraDevices(mediaDevices);
 
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
