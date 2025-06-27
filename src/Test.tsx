@@ -307,14 +307,14 @@ const QRScanner = () => {
             const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
             const mediaDevices = await navigator.mediaDevices.enumerateDevices();
 
-            // setBackCameraDevices(
-            //     mediaDevices.filter(
-            //         (device) =>
-            //             device.kind === "videoinput" && device.label.toLowerCase().includes("back")
-            //     )
-            // );
+            setBackCameraDevices(
+                mediaDevices.filter(
+                    (device) =>
+                        device.kind === "videoinput" && device.label.toLowerCase().includes("back")
+                )
+            );
 
-            setBackCameraDevices(mediaDevices);
+            // setBackCameraDevices(mediaDevices);
 
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
