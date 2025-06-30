@@ -90,14 +90,14 @@ const QRScanner = () => {
     const [showScanner, setShowScanner] = useState(false);
 
     const [zoomLevel, setZoomLevel] = useState(() => {
-        if (typeof window !== "undefined") {
-            const savedSettings = localStorage.getItem("scanningSettings");
+        // if (typeof window !== "undefined") {
+        //     const savedSettings = localStorage.getItem("scanningSettings");
 
-            if (savedSettings) {
-                const parsedSettings = JSON.parse(savedSettings);
-                return parsedSettings.INITIAL_ZOOM_LEVEL || SETTINGS.INITIAL_ZOOM_LEVEL;
-            }
-        }
+        //     if (savedSettings) {
+        //         const parsedSettings = JSON.parse(savedSettings);
+        //         return parsedSettings.INITIAL_ZOOM_LEVEL || SETTINGS.INITIAL_ZOOM_LEVEL;
+        //     }
+        // }
         return SETTINGS.INITIAL_ZOOM_LEVEL;
     });
 
@@ -477,20 +477,20 @@ const QRScanner = () => {
     );
     const [blurHistorySize, setBlurHistorySize] = useState<number>(SETTINGS.BLUR_HISTORY_SIZE);
 
-    useEffect(() => {
-        const savedSettings = localStorage.getItem("scanningSettings");
-        if (savedSettings) {
-            const parsedSettings = JSON.parse(savedSettings);
-            Object.assign(SETTINGS, parsedSettings);
+    // useEffect(() => {
+    //     const savedSettings = localStorage.getItem("scanningSettings");
+    //     if (savedSettings) {
+    //         const parsedSettings = JSON.parse(savedSettings);
+    //         Object.assign(SETTINGS, parsedSettings);
 
-            setZoomLevel(parsedSettings.INITIAL_ZOOM_LEVEL || SETTINGS.INITIAL_ZOOM_LEVEL);
+    //         setZoomLevel(parsedSettings.INITIAL_ZOOM_LEVEL || SETTINGS.INITIAL_ZOOM_LEVEL);
 
-            setProcessingInterval(
-                parsedSettings.FRAME_PROCESSING_INTERVAL || SETTINGS.FRAME_PROCESSING_INTERVAL
-            );
-            setBlurHistorySize(parsedSettings.BLUR_HISTORY_SIZE || SETTINGS.BLUR_HISTORY_SIZE);
-        }
-    }, []);
+    //         setProcessingInterval(
+    //             parsedSettings.FRAME_PROCESSING_INTERVAL || SETTINGS.FRAME_PROCESSING_INTERVAL
+    //         );
+    //         setBlurHistorySize(parsedSettings.BLUR_HISTORY_SIZE || SETTINGS.BLUR_HISTORY_SIZE);
+    //     }
+    // }, []);
 
     // Add this function to calculate if blur values are stable
     const areBlurValuesStable = (values: number[]): boolean => {
@@ -533,26 +533,26 @@ const QRScanner = () => {
     };
 
     // Save settings to localStorage whenever they change
-    const saveSettings = (key: string, value: number) => {
-        const currentSettings = localStorage.getItem("scanningSettings")
-            ? JSON.parse(localStorage.getItem("scanningSettings") || "{}")
-            : { ...SETTINGS };
+    // const saveSettings = (key: string, value: number) => {
+    //     const currentSettings = localStorage.getItem("scanningSettings")
+    //         ? JSON.parse(localStorage.getItem("scanningSettings") || "{}")
+    //         : { ...SETTINGS };
 
-        currentSettings[key] = value;
-        localStorage.setItem("scanningSettings", JSON.stringify(currentSettings));
+    //     currentSettings[key] = value;
+    //     localStorage.setItem("scanningSettings", JSON.stringify(currentSettings));
 
-        // Update the SETTINGS object
-        SETTINGS[key as keyof ScanningSettings] = value;
-    };
+    //     // Update the SETTINGS object
+    //     SETTINGS[key as keyof ScanningSettings] = value;
+    // };
 
     const handleProcessingIntervalChange = (value: number) => {
         setProcessingInterval(value);
-        saveSettings("FRAME_PROCESSING_INTERVAL", value);
+        // saveSettings("FRAME_PROCESSING_INTERVAL", value);
     };
 
     const handleBlurHistorySizeChange = (value: number) => {
         setBlurHistorySize(value);
-        saveSettings("BLUR_HISTORY_SIZE", value);
+        // saveSettings("BLUR_HISTORY_SIZE", value);
     };
 
     const processingIntervalOptions = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1000];
@@ -1735,7 +1735,7 @@ const QRScanner = () => {
         setSavedZoomLevel(newZoom);
         setZoomLevel(newZoom);
 
-        saveSettings("INITIAL_ZOOM_LEVEL", newZoom);
+        // saveSettings("INITIAL_ZOOM_LEVEL", newZoom);
 
         blurValuesHistory.current = [];
         adaptiveThresholdApplied.current = false;
