@@ -181,8 +181,8 @@ const QRScanner = () => {
 
     //qr-scanner engine
     useEffect(() => {
-        localStorage.clear();
-        sessionStorage.clear();
+        // localStorage.clear();
+        // sessionStorage.clear();
         engineRef.current = QrScanner.createQrEngine(QrScanner.WORKER_PATH);
         return () => {
             engineRef.current?.then((worker) => worker.terminate());
@@ -307,14 +307,14 @@ const QRScanner = () => {
             const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
             const mediaDevices = await navigator.mediaDevices.enumerateDevices();
 
-            setBackCameraDevices(
-                mediaDevices.filter(
-                    (device) =>
-                        device.kind === "videoinput" && device.label.toLowerCase().includes("back")
-                )
-            );
+            // setBackCameraDevices(
+            //     mediaDevices.filter(
+            //         (device) =>
+            //             device.kind === "videoinput" && device.label.toLowerCase().includes("back")
+            //     )
+            // );
 
-            // setBackCameraDevices(mediaDevices);
+            setBackCameraDevices(mediaDevices);
 
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
@@ -350,13 +350,32 @@ const QRScanner = () => {
                 width: { ideal: 1400 },
                 height: { ideal: 1400 },
             };
-            const stream = await navigator.mediaDevices.getUserMedia({
+            const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: videoConstraints,
                 audio: false,
             });
 
             if (videoRef.current) {
-                videoRef.current.srcObject = stream;
+                videoRef.current.srcObject = mediaStream;
+
+                // Set dimensions once we have camera access
+                // Get video track and apply saved zoom level
+                const track = mediaStream.getVideoTracks()[0];
+                const capabilities = track.getCapabilities();
+                console.log(capabilities);
+
+                if ("zoom" in capabilities) {
+                    await track.applyConstraints({
+                        advanced: [{ zoom: savedZoomLevel } as any],
+                    });
+                    setZoomLevel(savedZoomLevel);
+                }
+
+                const settings = track.getSettings();
+                setDimen({
+                    width: settings.width ?? 0,
+                    height: settings.height ?? 0,
+                });
             }
             localStorage.setItem("deviceId", deviceId);
         } catch (err) {
@@ -2097,12 +2116,16 @@ const QRScanner = () => {
         }
     };
 
-    const handleScanClick = () => {
-        setShowScanner(true);
+    const handleDeviceChange = (deviceId: string) => {
+        setSelectedDeviceId(deviceId);
     };
 
-    const handleDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedDeviceId(e.target.value);
+    const handleScanClick = () => {
+        setShowScanner(true);
+        const deviceId = localStorage.getItem("deviceId");
+        if (deviceId) {
+            setSelectedDeviceId(deviceId);
+        }
     };
 
     return (
@@ -2213,22 +2236,31 @@ const QRScanner = () => {
                             </div>
                         )}
                         {backCameraDevices.length > 1 && (
-                            <div className="flex justify-center mt-4 w-full px-10">
-                                <select
-                                    id="cameraDropdown"
-                                    onChange={handleDeviceChange}
-                                    value={selectedDeviceId || ""}
-                                    className="w-full"
-                                >
-                                    <option value="" disabled>
-                                        Select a camera
-                                    </option>
-                                    {backCameraDevices.map((device) => (
-                                        <option key={device.deviceId} value={device.deviceId}>
-                                            {device.label || `Camera ${device.deviceId}`}
-                                        </option>
-                                    ))}
-                                </select>
+                            <div>
+                                <p className="text-center text-md text-gray-700">
+                                    Switch cameras if you can't focus the image
+                                </p>
+                                <div className="grid grid-cols-3 gap-4 mt-4 px-10 w-full">
+                                    {backCameraDevices.map((device, index) => {
+                                        const isActive = selectedDeviceId === device.deviceId;
+                                        return (
+                                            <button
+                                                key={device.deviceId}
+                                                onClick={() => handleDeviceChange(device.deviceId)}
+                                                className={`
+                                                py-2 rounded-full border transition
+                                                ${
+                                                    isActive
+                                                        ? "border-[#4553ED] border-2 text-[#4553ED] bg-gray-200"
+                                                        : "border-transparent text-gray-500 bg-gray-200 hover:bg-gray-300"
+                                                }
+                                                `}
+                                            >
+                                                Cam {index + 1}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         )}
                         {/* Error Display - Always visible */}
