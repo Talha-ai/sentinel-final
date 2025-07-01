@@ -148,6 +148,7 @@ const QRScanner = () => {
     const [showScanAgain, setShowScanAgain] = useState(false);
     const [backCameraDevices, setBackCameraDevices] = useState<MediaDeviceInfo[]>([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+    const [uiSelectedDeviceId, setUiSelectedDeviceId] = useState<string | null>(null);
 
     //----setting up----
 
@@ -306,15 +307,13 @@ const QRScanner = () => {
 
             const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
             const mediaDevices = await navigator.mediaDevices.enumerateDevices();
-
-            setBackCameraDevices(
-                mediaDevices.filter(
-                    (device) =>
-                        device.kind === "videoinput" && device.label.toLowerCase().includes("back")
-                )
+            const filteredDevices = mediaDevices.filter(
+                (device) =>
+                    device.kind === "videoinput" && device.label.toLowerCase().includes("back")
             );
+            // const filteredDevices = mediaDevices;
 
-            // setBackCameraDevices(mediaDevices);
+            setBackCameraDevices(filteredDevices);
 
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
@@ -337,6 +336,9 @@ const QRScanner = () => {
                     width: settings.width ?? 0,
                     height: settings.height ?? 0,
                 });
+            }
+            if (!deviceId) {
+                setUiSelectedDeviceId(filteredDevices[0].deviceId);
             }
         } catch (error) {
             console.error("Failed to access camera:", error);
@@ -2118,6 +2120,7 @@ const QRScanner = () => {
 
     const handleDeviceChange = (deviceId: string) => {
         setSelectedDeviceId(deviceId);
+        setUiSelectedDeviceId(deviceId);
     };
 
     const handleScanClick = () => {
@@ -2125,6 +2128,7 @@ const QRScanner = () => {
         const deviceId = localStorage.getItem("deviceId");
         if (deviceId) {
             setSelectedDeviceId(deviceId);
+            setUiSelectedDeviceId(deviceId);
         }
     };
 
@@ -2242,7 +2246,7 @@ const QRScanner = () => {
                                 </p>
                                 <div className="grid grid-cols-3 gap-4 mt-4 px-10 w-full">
                                     {backCameraDevices.map((device, index) => {
-                                        const isActive = selectedDeviceId === device.deviceId;
+                                        const isActive = uiSelectedDeviceId === device.deviceId;
                                         return (
                                             <button
                                                 key={device.deviceId}
