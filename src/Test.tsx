@@ -393,7 +393,15 @@ const QRScanner = () => {
     const startNewScan = async () => {
         setShowScanAgain(false);
         resetState();
-        await setupCamera();
+
+        requestAnimationFrame(() => {
+            if (videoRef.current) {
+                setupCamera(); // async
+            } else {
+                // Retry in next frame
+                setTimeout(startNewScan, 100);
+            }
+        });
     };
 
     const cleanup = async () => {
