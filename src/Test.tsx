@@ -2248,7 +2248,7 @@ const QRScanner = () => {
                             </div>
                         )}
                         {backCameraDevices.length > 1 && (
-                            <div>
+                            <div className="mt-1">
                                 <p className="text-center text-md text-gray-700">
                                     Switch cameras if you can't focus the image
                                 </p>
