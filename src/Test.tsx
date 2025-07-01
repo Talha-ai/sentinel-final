@@ -148,6 +148,7 @@ const QRScanner = () => {
     const [showScanAgain, setShowScanAgain] = useState(false);
     const [backCameraDevices, setBackCameraDevices] = useState<MediaDeviceInfo[]>([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+    const [uiSelectedDeviceId, setUiSelectedDeviceId] = useState<string | null>(null);
 
     //----setting up----
 
@@ -306,15 +307,13 @@ const QRScanner = () => {
 
             const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
             const mediaDevices = await navigator.mediaDevices.enumerateDevices();
-
-            setBackCameraDevices(
-                mediaDevices.filter(
-                    (device) =>
-                        device.kind === "videoinput" && device.label.toLowerCase().includes("back")
-                )
+            const filteredDevices = mediaDevices.filter(
+                (device) =>
+                    device.kind === "videoinput" && device.label.toLowerCase().includes("back")
             );
+            // const filteredDevices = mediaDevices;
 
-            // setBackCameraDevices(mediaDevices);
+            setBackCameraDevices(filteredDevices);
 
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
@@ -338,6 +337,9 @@ const QRScanner = () => {
                     height: settings.height ?? 0,
                 });
             }
+            if (!deviceId) {
+                setUiSelectedDeviceId(filteredDevices[0].deviceId);
+            }
         } catch (error) {
             console.error("Failed to access camera:", error);
         }
@@ -350,6 +352,12 @@ const QRScanner = () => {
                 width: { ideal: 1400 },
                 height: { ideal: 1400 },
             };
+
+            if (videoRef.current?.srcObject) {
+                const oldStream = videoRef.current.srcObject as MediaStream;
+                oldStream.getTracks().forEach((track) => track.stop());
+            }
+
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: videoConstraints,
                 audio: false,
@@ -391,7 +399,15 @@ const QRScanner = () => {
     const startNewScan = async () => {
         setShowScanAgain(false);
         resetState();
-        await setupCamera();
+
+        requestAnimationFrame(() => {
+            if (videoRef.current) {
+                setupCamera(); // async
+            } else {
+                // Retry in next frame
+                setTimeout(startNewScan, 100);
+            }
+        });
     };
 
     const cleanup = async () => {
@@ -2118,6 +2134,7 @@ const QRScanner = () => {
 
     const handleDeviceChange = (deviceId: string) => {
         setSelectedDeviceId(deviceId);
+        setUiSelectedDeviceId(deviceId);
     };
 
     const handleScanClick = () => {
@@ -2125,6 +2142,7 @@ const QRScanner = () => {
         const deviceId = localStorage.getItem("deviceId");
         if (deviceId) {
             setSelectedDeviceId(deviceId);
+            setUiSelectedDeviceId(deviceId);
         }
     };
 
@@ -2236,13 +2254,13 @@ const QRScanner = () => {
                             </div>
                         )}
                         {backCameraDevices.length > 1 && (
-                            <div>
+                            <div className="mt-1">
                                 <p className="text-center text-md text-gray-700">
                                     Switch cameras if you can't focus the image
                                 </p>
                                 <div className="grid grid-cols-3 gap-4 mt-4 px-10 w-full">
                                     {backCameraDevices.map((device, index) => {
-                                        const isActive = selectedDeviceId === device.deviceId;
+                                        const isActive = uiSelectedDeviceId === device.deviceId;
                                         return (
                                             <button
                                                 key={device.deviceId}
