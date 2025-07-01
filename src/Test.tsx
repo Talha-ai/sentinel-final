@@ -352,6 +352,12 @@ const QRScanner = () => {
                 width: { ideal: 1400 },
                 height: { ideal: 1400 },
             };
+
+            if (videoRef.current?.srcObject) {
+                const oldStream = videoRef.current.srcObject as MediaStream;
+                oldStream.getTracks().forEach((track) => track.stop());
+            }
+
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: videoConstraints,
                 audio: false,
