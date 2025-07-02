@@ -146,6 +146,9 @@ const QRScanner = () => {
 
     const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([]);
     const [showScanAgain, setShowScanAgain] = useState(false);
+    const [backCameraDevices, setBackCameraDevices] = useState<MediaDeviceInfo[]>([]);
+    const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+    const [uiSelectedDeviceId, setUiSelectedDeviceId] = useState<string | null>(null);
 
     //----setting up----
 
@@ -250,6 +253,12 @@ const QRScanner = () => {
         };
     }, [showScanner]);
 
+    useEffect(() => {
+        if (selectedDeviceId) {
+            changeStream(selectedDeviceId);
+        }
+    }, [selectedDeviceId]);
+
     //canvas
     useEffect(() => {
         if (canvasRef.current) {
@@ -273,20 +282,38 @@ const QRScanner = () => {
 
     const setupCamera = async () => {
         try {
-            const constraints = {
-                video: {
-                    facingMode: "environment",
-                    width: { ideal: 1400 },
-                    height: { ideal: 1400 },
-                    frameRate: { ideal: 30, max: 60 },
-                    // Add orientation constraint
-                    deviceOrientation: "landscape",
-                    // Optional: specify exact orientation
-                    orientation: { exact: "landscape-primary" },
-                },
-            };
+            const deviceId = localStorage.getItem("deviceId");
+            let constraints;
+            if (deviceId) {
+                constraints = {
+                    video: {
+                        deviceId: { exact: deviceId },
+                        facingMode: "environment",
+                        width: { ideal: 1400 },
+                        height: { ideal: 1400 },
+                        frameRate: { ideal: 30, max: 60 },
+                    },
+                };
+            } else {
+                constraints = {
+                    video: {
+                        facingMode: "environment",
+                        width: { ideal: 1400 },
+                        height: { ideal: 1400 },
+                        frameRate: { ideal: 30, max: 60 },
+                    },
+                };
+            }
 
             const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+            const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+            const filteredDevices = mediaDevices.filter(
+                (device) =>
+                    device.kind === "videoinput" && device.label.toLowerCase().includes("back")
+            );
+            // const filteredDevices = mediaDevices;
+
+            setBackCameraDevices(filteredDevices);
 
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
@@ -310,8 +337,57 @@ const QRScanner = () => {
                     height: settings.height ?? 0,
                 });
             }
+            if (!deviceId) {
+                setUiSelectedDeviceId(filteredDevices[0].deviceId);
+            }
         } catch (error) {
             console.error("Failed to access camera:", error);
+        }
+    };
+
+    const changeStream = async (deviceId: string) => {
+        try {
+            const videoConstraints: MediaTrackConstraints = {
+                deviceId: { exact: deviceId },
+                width: { ideal: 1400 },
+                height: { ideal: 1400 },
+            };
+
+            if (videoRef.current?.srcObject) {
+                const oldStream = videoRef.current.srcObject as MediaStream;
+                oldStream.getTracks().forEach((track) => track.stop());
+            }
+
+            const mediaStream = await navigator.mediaDevices.getUserMedia({
+                video: videoConstraints,
+                audio: false,
+            });
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = mediaStream;
+
+                // Set dimensions once we have camera access
+                // Get video track and apply saved zoom level
+                const track = mediaStream.getVideoTracks()[0];
+                const capabilities = track.getCapabilities();
+                console.log(capabilities);
+
+                if ("zoom" in capabilities) {
+                    await track.applyConstraints({
+                        advanced: [{ zoom: savedZoomLevel } as any],
+                    });
+                    setZoomLevel(savedZoomLevel);
+                }
+
+                const settings = track.getSettings();
+                setDimen({
+                    width: settings.width ?? 0,
+                    height: settings.height ?? 0,
+                });
+            }
+            localStorage.setItem("deviceId", deviceId);
+        } catch (err) {
+            console.error("Failed to start video stream:", err);
         }
     };
 
@@ -323,7 +399,15 @@ const QRScanner = () => {
     const startNewScan = async () => {
         setShowScanAgain(false);
         resetState();
-        await setupCamera();
+
+        requestAnimationFrame(() => {
+            if (videoRef.current) {
+                setupCamera(); // async
+            } else {
+                // Retry in next frame
+                setTimeout(startNewScan, 100);
+            }
+        });
     };
 
     const cleanup = async () => {
@@ -2048,8 +2132,18 @@ const QRScanner = () => {
         }
     };
 
+    const handleDeviceChange = (deviceId: string) => {
+        setSelectedDeviceId(deviceId);
+        setUiSelectedDeviceId(deviceId);
+    };
+
     const handleScanClick = () => {
         setShowScanner(true);
+        const deviceId = localStorage.getItem("deviceId");
+        if (deviceId) {
+            setSelectedDeviceId(deviceId);
+            setUiSelectedDeviceId(deviceId);
+        }
     };
 
     return (
@@ -2157,6 +2251,34 @@ const QRScanner = () => {
                                     savedZoomLevel={savedZoomLevel}
                                     onZoomChange={handleZoomChange}
                                 />
+                            </div>
+                        )}
+                        {backCameraDevices.length > 1 && (
+                            <div className="mt-1">
+                                <p className="text-center text-md text-gray-700">
+                                    Switch cameras if you can't focus the image
+                                </p>
+                                <div className="grid grid-cols-3 gap-4 mt-4 px-10 w-full">
+                                    {backCameraDevices.map((device, index) => {
+                                        const isActive = uiSelectedDeviceId === device.deviceId;
+                                        return (
+                                            <button
+                                                key={device.deviceId}
+                                                onClick={() => handleDeviceChange(device.deviceId)}
+                                                className={`
+                                                py-2 rounded-full border transition
+                                                ${
+                                                    isActive
+                                                        ? "border-[#4553ED] border-2 text-[#4553ED] bg-gray-200"
+                                                        : "border-transparent text-gray-500 bg-gray-200 hover:bg-gray-300"
+                                                }
+                                                `}
+                                            >
+                                                Cam {index + 1}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         )}
                         {/* Error Display - Always visible */}
