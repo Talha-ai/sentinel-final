@@ -288,10 +288,8 @@ const QRScanner = () => {
                 constraints = {
                     video: {
                         deviceId: { exact: deviceId },
-                        facingMode: "environment",
                         width: { ideal: 1400 },
                         height: { ideal: 1400 },
-                        frameRate: { ideal: 30, max: 60 },
                     },
                 };
             } else {
@@ -300,7 +298,6 @@ const QRScanner = () => {
                         facingMode: "environment",
                         width: { ideal: 1400 },
                         height: { ideal: 1400 },
-                        frameRate: { ideal: 30, max: 60 },
                     },
                 };
             }
